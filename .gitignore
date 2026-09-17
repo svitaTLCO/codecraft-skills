@@ -1,0 +1,10 @@
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.vscode/
+.idea/
+.opencode/
+__pycache__/
+*.pyc
+eval/semantic_input.txt

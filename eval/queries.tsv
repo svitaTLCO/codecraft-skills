@@ -1,0 +1,63 @@
+d1	refactor-detect	refactor-methods,refactor-objects,refactor-data,refactor-conditionals,refactor-calls,refactor-generalization	positive	our checkout module feels like a ball of mud, tell me what to fix first
+d2	refactor-detect	refactor-methods,refactor-objects,refactor-data,refactor-conditionals,refactor-calls,refactor-generalization	positive	audit this package for code smells and give me an ordered cleanup plan
+m1	refactor-methods	refactor-detect	positive	split calculateTotal: it computes tax, applies discounts and formats output, all inline
+m2	refactor-methods	refactor-detect	positive	half the locals in syncInventory are dead weights living one line
+m3	refactor-methods	refactor-detect	positive	extract the retry and backoff math into its own helper so the loop reads flat
+m4	refactor-methods	refactor-detect	positive	this O(n^2) search works but crawls on big inputs, suggest a better algorithm
+o1	refactor-objects	refactor-detect	positive	renderHeader belongs on PageRenderer, it pokes renderer internals constantly
+o2	refactor-objects	refactor-detect	positive	BillingService has forty fields and knows how to email, invoice and store - break it up
+o3	refactor-objects	refactor-detect	positive	stop handing the raw db session to controllers
+o4	refactor-objects	refactor-detect	positive	customer.getProfile().getAddress().getStreet() appears nineteen times
+da1	refactor-data	refactor-detect	positive	amounts are floats and rounding drift is showing up in reports
+da2	refactor-data	refactor-detect	positive	if (retries < 5) && window > 30_000 - decode these literals
+da3	refactor-data	refactor-detect	positive	account.role is a string with ADMIN/OPS checked all over the place
+da4	refactor-data	refactor-detect	positive	the getter hands out the live shopping cart list and views mutate it
+c1	refactor-conditionals	refactor-detect	positive	unroll this nested if-else pyramid with guard clauses
+c2	refactor-conditionals	refactor-detect	positive	three services each re-implement the same billing-eligibility predicate
+c3	refactor-conditionals	refactor-detect	positive	job.type switch appears in scheduler, logger and exporter - kill it with polymorphism
+c4	refactor-conditionals	refactor-detect	positive	check the notifier for null before every one of twelve calls
+cl1	refactor-calls	refactor-detect	positive	process(item) really means submitForApproval, rename it
+cl2	refactor-calls	refactor-detect	positive	archive(paths, fmt, level, dir, dry, timeout) signature is becoming unwieldy
+cl3	refactor-calls	refactor-detect	positive	validate(file, true) where the bool flips the entire mode - give me named variants
+cl4	refactor-calls	refactor-detect	positive	loadConfig quietly returns NULL on bad paths and callers ignore it
+g1	refactor-generalization	refactor-detect	positive	lift validateContact() up, all three address subclasses implement it identically
+g2	refactor-generalization	refactor-detect	positive	LegacyPdfExporter extends PdfExporter but overrides nearly everything
+g3	refactor-generalization	refactor-detect	positive	nothing instantiates DocumentProcessor directly - pure relay layer between Doc and DocStore, drop it
+g4	refactor-generalization	refactor-detect	positive	csv, json and xml exporters share open-parse-transform-close, factor the skeleton
+p1	patterns-detect	patterns-behavioral,patterns-creational,patterns-structural	positive	which pattern should I reach for to add hot-swappable notification channels?
+p2	patterns-detect	patterns-behavioral,patterns-creational,patterns-structural	positive	is introducing a design pattern justified here or am I over-engineering?
+cr1	patterns-creational	patterns-detect	positive	building a Report takes a required header, zero-to-many sections and an optional footer in a fixed order
+cr2	patterns-creational	patterns-detect	positive	services shouldn't name their concrete repositories at construction time
+cr3	patterns-creational	patterns-detect	positive	deep-copy the preconfigured scene graph for each level instead of loading from disk
+cr4	patterns-creational	patterns-detect	positive	every feature spins up its own MetricHub instance, I need exactly one shared across the app
+s1	patterns-structural	patterns-detect	positive	legacy SDK is callbacks; I want a promise-based wrapper over it without touching the vendor lib
+s2	patterns-structural	patterns-detect	positive	renderer implementations vary by backend and widget type - I'm growing a 2xN grid of subclasses
+s3	patterns-structural	patterns-detect	positive	model a directory tree where folders and files satisfy the same move and delete contract
+s4	patterns-structural	patterns-detect	positive	my http client wants optional gzip, retries and metrics wrapped on demand
+s5	patterns-structural	patterns-detect	positive	onboarding flow juggles IdentityClient, BillingClient, Provisioner and seven more
+s6	patterns-structural	patterns-detect	positive	board holds 40k piece objects and RAM explodes though most pieces share texture and color
+s7	patterns-structural	patterns-detect	positive	open the heavyweight warehouse client lazily only when a query actually runs
+b1	patterns-behavioral	patterns-detect	positive	shipping cost policy differs per carrier and must be chosen per order at dispatch time
+b2	patterns-behavioral	patterns-detect	positive	checkout has DRAFT-PENDING-PAID transitions guarded by a forest of if state== checks
+b3	patterns-behavioral	patterns-detect	positive	editor needs unlimited undo of document mutations
+b4	patterns-behavioral	patterns-detect	positive	inventory price drops must refresh the dashboard, the cache and the analytics sink
+b5	patterns-behavioral	patterns-detect	positive	queue user intents so they survive a connection blip and can be replayed
+b6	patterns-behavioral	patterns-detect	positive	anomaly alerts should walk the on-call ladder until someone acknowledges
+b7	patterns-behavioral	patterns-detect	positive	chat input, typing indicator and presence module ping each other directly - tangle
+b8	patterns-behavioral	patterns-detect	positive	compile step walks the expression AST producing IR while a type-check pass emits diagnostics
+b9	patterns-behavioral	patterns-detect	positive	let clients traverse our custom skip-list without reaching into nodes
+n1	patterns-behavioral	patterns-detect	positive-named	apply the observer pattern to the event bus
+n2	patterns-creational	patterns-detect	positive-named	make this builder a fluent builder with validation
+n3	patterns-structural	patterns-detect	positive-named	convert this adapter to wrap the new interface
+n4	patterns-behavioral	patterns-detect	positive-named	use template method for the shared request lifecycle
+x1	patterns-behavioral	refactor-data,refactor-calls,patterns-detect	cross-set	refactor the fee engine so tariff schedules become pluggable strategies
+x2	refactor-data	refactor-conditionals,refactor-generalization,patterns-behavioral	ambiguity	replace the product-type conditionals with subclasses
+x3	patterns-structural	refactor-objects	ambiguity	extract a facade around the payment gateway classes
+x4	refactor-calls	patterns-creational	compound	turn the error-code returns into exceptions and add a factory for config objects
+z1	NONE		negative	deploy this Flask app to Azure App Service
+z2	NONE		negative	commit my staged changes with a conventional message
+z3	NONE		negative	there's an NPE in UserService#load, track down the cause
+z4	NONE		negative	write pytest coverage for the coupon stacking rules
+z5	NONE		negative	index this query, it's a full table scan
+z6	NONE		negative	the landing page looks like every AI demo site, fix that vibe
+z7	NONE		negative	migrate these GCP pub/sub consumers to Azure Service Bus
