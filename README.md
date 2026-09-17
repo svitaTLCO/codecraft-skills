@@ -1,96 +1,98 @@
 # CodeCraft Skills
 
-Give your agent the craft. Auto-detecting agent skills that cover the complete
-refactoring catalog (66 techniques) and the classic design pattern catalog
-(22 GoF patterns). Drop them into any agent that loads Markdown skills and it
-can detect which refactoring or pattern applies from plain-language symptoms —
-no lookups, no prompting tricks.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-## What's inside
+Your agent should not need a lecture before it knows when to **Extract Method**
+or when a billing engine deserves a **State** object. CodeCraft Skills hands
+it two complete catalogs — **66 refactorings** and **22 design patterns** — as
+auto-detecting agent skills: it reads the symptoms, picks the technique, and
+applies it with the pitfalls already known.
 
-Two coordinated sets. Each set starts at a master detector that handles vague,
-global requests and routes to specialized leaf skills.
+```
+you      this function computes tax, discounts and formatting — all inline
+agent    refactor-methods ▸ Extract Method: split along the responsibility
+         seams; keep the original as a delegating shell; pitfall: don't
+         extract across a side-effect boundary
+```
 
-### Set A — Refactorings (`refactor-*`)
+## What you get
 
-Catalog source: the refactoring.guru "Refactoring" guide (Alexander Shvets).
-All prose, detection heuristics, and pseudocode below are original to this
-project.
-
-| Skill | Scope | Techniques |
+| Set | Skills | Catalog |
 |---|---|---|
-| `refactor-detect` | Master detector & router | routes global/meta requests |
-| `refactor-methods` | Improving method structure | 9 |
-| `refactor-objects` | Moving and manipulating object-level units | 8 |
-| `refactor-data` | Data structures, variables, arrays, records | 15 |
-| `refactor-conditionals` | Conditional logic, guards, polymorphic switches | 8 |
-| `refactor-calls` | Method calls, parameters, API shape | 14 |
-| `refactor-generalization` | Inheritance, templates, generics, hierarchies | 12 |
+| Refactorings (`refactor-*`) | 7 — master detector + 6 category leaves | 66 techniques, every category of the refactoring.guru guide |
+| Design Patterns (`patterns-*`) | 4 — master detector + 3 family leaves | 22 GoF patterns, all three families |
 
-Total: **66 refactorings**.
+Each skill is one `SKILL.md`: YAML frontmatter plus body. No runtime, no
+dependencies, works with anything that loads Markdown skills
+(opencode, Claude Code style layouts, or your own loader).
 
-### Set B — Design Patterns (`patterns-*`)
+## How detection works
 
-Catalog source: the refactoring.guru "Design Patterns" guide.
+Every set has a **root detector** for the vague requests — *"this file feels
+like a ball of mud"*, *"is there a pattern hiding in here?"* — that collects
+smell signals, breaks ties by explicit rules, and routes to the right leaf.
+Leaves carry the substance: a **Quick Pick** table for the items people
+confuse most, then per item — **Detect** (what it looks like), **Preconditions**
+(when *not* to apply), **Apply** (language-neutral steps), **Pitfalls**.
 
-| Skill | Family | Patterns |
-|---|---|---|
-| `patterns-detect` | Master detector & router | routes global/meta requests |
-| `patterns-creational` | Creational | 5 |
-| `patterns-structural` | Structural | 7 |
-| `patterns-behavioral` | Behavioral | 10 |
+It runs on plain language, because that's what developers actually type:
 
-Total: **22 design patterns**.
+| You say | What engages |
+|---|---|
+| *"our checkout module feels like a ball of mud, tell me what to fix first"* | `refactor-detect` — an ordered, signal-ranked plan |
+| *"split calculateTotal: it computes tax, applies discounts and formats output, all inline"* | `refactor-methods` → **Extract Method** |
+| *"BillingService has forty fields and knows how to email, invoice and store - break it up"* | `refactor-objects` → **Extract Class** |
+| *"legacy SDK is callbacks; I want a promise-based wrapper over it without touching the vendor lib"* | `patterns-structural` |
+| *"shipping cost policy differs per carrier and must be chosen per order at dispatch time"* | `patterns-behavioral` → **Strategy** territory |
+| *"deploy this Flask app to Azure App Service"* | nothing — out of domain, correctly declined |
 
-## How it works
+Rows above are verbatim samples from the evaluation corpus in [`eval/`](eval).
 
-- A **root skill** in each set answers broad questions ("refactor this file",
-  "is there a pattern that fits this code?"). It collects smell signals from
-  the code or conversation, resolves ordering and ties, and routes to one or
-  more leaf skills.
-- A **leaf skill** owns its category: a Quick-Pick disambiguation table plus a
-  per-item block — Detect (smells/symptoms), Preconditions/Avoid, Apply
-  (language-neutral pseudocode), Pitfalls.
-- Selection behavior was validated against a 63-query corpus (see `eval/`):
-  semantic routing hits the labeled target skill on 55/56 in-scope queries and
-  correctly rejects all 7 out-of-domain queries.
+## Evidence
+
+Selection behavior was benchmarked against a 63-query corpus (52 leaf
+probes, 4 root/meta probes, 7 deliberately out-of-domain):
+
+- **55/56** strict-primary routing hits (the single miss is a probe two
+  skills legitimately co-cover)
+- **7/7** out-of-domain queries rejected instead of force-fitted
+
+Reproduce it yourself — stdlib only, see `AGENTS.md` → Verification workflow:
+
+```sh
+python3 scripts/check_skills.py   # structural gate: schema, counts, invariants
+```
 
 ## Install
 
-Copy or symlink the skill directories into your agent's skills location. Every
-directory contains a single `SKILL.md` with YAML frontmatter (`name`,
-`description`) — the same contract other skills ecosystems use.
-
 ```sh
-# example: opencode
-cp -R ./<skill-dir> ~/.agents/skills/
+git clone https://github.com/svitaTLCO/codecraft-skills
+cd codecraft-skills
 
-# example: Claude Code layout
-cp -R ./<skill-dir> ~/.claude/skills/
+# opencode
+cp -R <skill-dir> ~/.agents/skills/        # or symlink while iterating
+
+# Claude Code layout
+cp -R <skill-dir> ~/.claude/skills/
 ```
 
-Symlinking is handy while iterating locally:
-
-```sh
-ln -s "$PWD/refactor-detect" ~/.agents/skills/refactor-detect
-```
+Install all eleven or cherry-pick a leaf — they compose and each description
+carries its own scope boundary, so wrong-skill pickup stays unlikely.
 
 ## Source & credit
 
 Catalog names, classifications, and family structure follow
-[refactoring.guru](https://refactoring.guru/) (copyright Alexander Shvets).
-Every explanation, heuristic, and example in this repository is written from
-scratch and is not copied from the site.
+[refactoring.guru](https://refactoring.guru/) (© Alexander Shvets). Every
+explanation, heuristic, and example here is written from scratch — nothing is
+copied from the site.
 
 ## Contributing
 
-- [`AGENTS.md`](AGENTS.md) — canonical instructions for AI agents (and
-  humans) editing this repository: skill schema, content standards, coverage
-  invariants, verification workflow.
-- [`CONTRIBUTING.md`](CONTRIBUTING.md) — short human quickstart.
-- `scripts/check_skills.py` — structural gate (stdlib-only Python).
-- `eval/` — selection-quality corpus and graders.
+Read [`AGENTS.md`](AGENTS.md) — it is the canonical contract for human *and*
+AI agents: skill schema, coverage invariants, verification workflow.
+[`CONTRIBUTING.md`](CONTRIBUTING.md) is the short version. Detection-quality
+fixes, pitfall corrections, and new corpus rows especially welcome.
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+[MIT](LICENSE)
