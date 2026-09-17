@@ -1,6 +1,6 @@
 ---
 name: patterns-behavioral
-description: Detect and apply refactoring.guru behavioral patterns: Chain of Responsibility, Command, Iterator, Mediator, Memento, Observer, State, Strategy, Template Method, Visitor. Use when algorithms must swap at runtime, objects coordinate via tangled messaging, undo/redo is needed, notification fans-out, request pipelines route dynamically, type hierarchies accrete new operations, or state machines hide in big conditionals. Triggers: "event bus", "undo this", "swap algorithm", "too many observers", "workflow pipeline", "state machine", "visit every node", "loose coupling between these two".
+description: Detect and apply refactoring.guru behavioral patterns: Chain of Responsibility, Command, Iterator, Mediator, Memento, Observer, State, Strategy, Template Method, Visitor. Use when algorithms must swap at runtime ("pluggable strategies/policies chosen per instance"), objects coordinate via tangled messaging, undo/redo is needed, notification fans-out, request pipelines route dynamically, type hierarchies accrete new operations, or state machines hide in big conditionals. Triggers: "event bus", "undo this", "swap algorithm", "too many observers", "workflow pipeline", "state machine", "visit every node", "loose coupling between these two". Also handles direct named-pattern calls within this family: "apply the observer pattern", "make these pluggable strategies", "use template method for X", "state transitions here".
 ---
 
 # Behavioral Patterns (Refactoring.Guru set)
