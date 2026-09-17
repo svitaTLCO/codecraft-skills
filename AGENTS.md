@@ -83,6 +83,53 @@ Required structure:
 4. Item section order follows the Quick-Pick / catalog grouping, not
    alphabetical order.
 
+## Leading words
+
+Classic software-engineering terms prime agent behavior more reliably than
+original phrasing ("leading words"). Use them deliberately, never decoratively.
+
+### Selection side (descriptions, Detect lines)
+
+When a smell has a canonical name, **open** the symptom clause with it — these
+phrases are the highest-weight tokens an auto-selector matches against user
+queries. Never bury a canonical term mid-list. One per sentence, max; keep
+plain English around it.
+
+Curated smell vocabulary (additions require the same care as new items):
+
+| Term | What it names | Routes toward |
+|---|---|---|
+| feature envy | a method reaches into another object more than its own | `refactor-objects` (Move Method, Hide Delegate) |
+| data clumps | variables travel together repeatedly | `refactor-data` (Replace Data Value with Object) |
+| shotgun surgery | one change forces many edits across classes | `refactor-objects` (Extract Class, moves) |
+| divergent change | one class edited for many unrelated reasons | `refactor-objects` (Extract Class) |
+| primitive obsession | raw strings/ints standing in for concepts | `refactor-data` (Replace Type Code with …) |
+| magic number | unexplained literal used inline | `refactor-data` (Symbolic Constant) |
+| switch proliferation | parallel type-code switches replicated across modules | `refactor-conditionals` (Replace Conditional with Polymorphism) |
+| dead weight | locals/parameters unused or needlessly copied | `refactor-methods` (Inline Temp, Split Temporary Variable) |
+| ball of mud / god class | sprawling aggregate doing everything | route via `refactor-detect` |
+
+### Execution side (Apply, Pitfalls)
+
+At most **one** discipline phrase per block, and only where it sharpens an
+ordering or verification step — it must change what the executing agent does,
+not decorate prose.
+
+Curated discipline vocabulary:
+
+| Term | Meaning here |
+|---|---|
+| golden path | do/harden the highest-frequency variant first, stub the rest |
+| tracer bullet | thin end-to-end slice proving integration before widening scope |
+| tests pin the seam | snapshot observable behavior before moving it |
+| fail explicit | refuse silent defaults; missing config becomes an error |
+| strangler fig | wrap and replace incrementally; old path stays green during migration |
+| smallest possible diff | no drive-by refactors inside a behavior-preserving move |
+| contract-first | freeze the public shape before internals move |
+
+Rules: do not coin new terms; do not stack two leading words in one sentence;
+if a term from the bank does not fit, plain English wins.
+
 ## Coverage invariants
 
 Closed catalogs; treat counts as invariants, not targets:
@@ -117,7 +164,8 @@ Rules:
 - Make the smallest coherent change that satisfies the request; preserve the
   verified structure (Quick Pick + per-item blocks).
 - Detection-first: when improving an item, strengthen **Detect** before
-  rewriting Apply. Most routing quality lives in symptoms, not steps.
+  rewriting Apply. Most routing quality lives in symptoms, not steps — and
+  symptom text follows the leading-words doctrine above.
 - Pseudocode stays language-neutral (see content standards).
 - Attribution headers and the README "Source & credit" section are
   load-bearing for licensing honesty: never remove them.
