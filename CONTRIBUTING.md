@@ -24,7 +24,8 @@ cd eval && python3 build_input.py    # if you touched a description/routing tabl
 
 ## Testing with a live agent
 
-Load the changed skill in your agent of choice, then:
+In a fresh agent session that did not make the change (a session cannot
+review its own edits), load the changed skill, then:
 
 1. Ask an in-scope question and confirm the skill engages.
 2. Ask an out-of-domain question and confirm it declines or reroutes.
@@ -39,6 +40,9 @@ Load the changed skill in your agent of choice, then:
   the full item list verbatim).
 - New queries for `eval/queries.tsv` (label them honestly: skill name, or
   `NONE` for out-of-domain).
+- Regression probes captured from real failures: any misroute or
+  non-engagement you hit must land as a `queries.tsv` row before the fix
+  (AGENTS.md "Regression capture").
 
 Out of scope without maintainer sign-off: adding items outside the two
 closed catalogs, renaming/removing catalog items, third-party dependencies,

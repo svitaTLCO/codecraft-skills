@@ -2,7 +2,8 @@
 """Structural gate for codecraft-skills. Stdlib only.
 
 Usage: python3 scripts/check_skills.py [repo_root]
-Exits 0 when all checks pass, 1 otherwise.
+Exits 0 when all checks pass, 1 otherwise. Also reports per-skill and total
+SKILL.md byte size (context cost) — informational, not gated.
 """
 import re
 import sys
@@ -59,12 +60,14 @@ def main(root: Path) -> int:
         fail(f"skill dirs unexpected={sorted(names - expected)} missing={sorted(expected - names)}")
 
     item_total = 0
+    sizes = {}
     for d in skill_dirs:
         skill_md = d / "SKILL.md"
         if not skill_md.exists():
             fail(f"{d.name}: missing SKILL.md")
             continue
         text = skill_md.read_text(encoding="utf-8")
+        sizes[d.name] = len(text.encode("utf-8"))
         fm = parse_frontmatter(text)
         if fm is None:
             fail(f"{d.name}: missing or malformed YAML frontmatter block")
@@ -108,6 +111,12 @@ def main(root: Path) -> int:
         fail(f"catalog total {item_total} != expected {EXPECTED_TOTAL}")
     else:
         ok(f"catalog coverage invariant holds ({EXPECTED_TOTAL} items across 9 leaves)")
+
+    print("\ncontext cost (SKILL.md bytes, informational — not gated)")
+    for d in skill_dirs:
+        n = sizes.get(d.name)
+        print(f"  {d.name:<24} {n if n is not None else 'missing'}")
+    print(f"  {'TOTAL':<24} {sum(sizes.values())}")
 
     if failures:
         print(f"\n{failures.__len__()} check(s) FAILED")

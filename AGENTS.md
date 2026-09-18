@@ -176,6 +176,15 @@ Rules:
 - No emojis, no commentary paragraphs describing the edit inside the skill
   text.
 
+## Regression capture
+
+A misroute, non-engagement, or force-fit observed in real use becomes a
+permanent probe in `eval/queries.tsv` **before** the fix that addresses it
+merges — the query verbatim (minimally de-identified when needed), labeled
+with the skill that should engage, or `NONE` for out-of-domain. A fix without
+its probe is incomplete: the defect it targeted is unguarded. Corpus growth
+moves the documented baseline; that is growth, not a regression.
+
 ## Verification workflow
 
 Always run, in this order:
@@ -186,7 +195,8 @@ Always run, in this order:
    ```
    Checks: directory/name match, frontmatter validity, description length and
    required markers, Quick-Pick presence, per-leaf item counts against the
-   invariants table.
+   invariants table. Also reports per-skill and total `SKILL.md` byte size
+   (context cost; informational — no limit enforced).
 2. **Selection regression** (required whenever a `description` or routing
    table changed; stdlib only):
    ```sh
@@ -201,13 +211,18 @@ Always run, in this order:
    relay-layer probe accepted either way as dual-covered). Any new leak on a
    negative query is a hard regression: fix the description before merging.
    Optional lexical floor: `python3 lexsim.py`.
-3. **Live spot-check**: load the changed skill in a real agent session and ask
-   one in-scope question plus one out-of-domain question; confirm it engages
-   on the first and declines/reroutes on the second.
+3. **Live spot-check (blind, fresh context)**: use a new agent session that
+   has not made this change — the editing session cannot review its own
+   work. Give it no hint about which skill changed; ask one in-scope question
+   targeting the changed area plus one deliberately out-of-domain question;
+   confirm the right skill engages on the first and declines or reroutes on
+   the second.
 
 ## PR checklist
 
 - [ ] `python3 scripts/check_skills.py` passes.
+- [ ] Any real-world misroute or non-engagement this change fixes ships with
+  its probe in `eval/queries.tsv` (see Regression capture).
 - [ ] `eval` grading shows no regression versus baseline (if applicable).
 - [ ] Description still lists every covered item verbatim.
 - [ ] Counts in this file and README match the leaves (if inventory moved).
