@@ -2,9 +2,14 @@
 """Structural gate for codecraft-skills. Stdlib only.
 
 Usage: python3 scripts/check_skills.py [repo_root]
-Exits 0 when all checks pass, 1 otherwise. Also reports per-skill and total
-SKILL.md byte size (context cost) — informational, not gated.
+Exits 0 when all checks pass, 1 otherwise. Enforces: schema and inventory
+invariants, root-to-leaf routing cross-references, pairwise description
+overlap floor, README badge consistency with eval/BASELINE.md, and VERSION
+presence/format. Also
+reports per-skill and total SKILL.md byte size (context cost) and a per-item
+depth scorecard — informational, not gated.
 """
+import itertools
 import re
 import sys
 from pathlib import Path
@@ -24,6 +29,9 @@ LEAF_COUNTS = {
 EXPECTED_TOTAL = sum(LEAF_COUNTS.values())
 MIN_DESC, MAX_DESC = 150, 1000
 EXCLUDE_DIRS = {".git", "scripts", "eval"}
+OVERLAP_WARN = 0.15
+OVERLAP_FAIL = 0.30
+SECTION_RE = re.compile(r"\*\*(Detect|Preconditions(?:\s*/\s*Avoid)?|Avoid|Apply|Pitfalls)[: ]?\*\*\s*(.*)$")
 
 
 def parse_frontmatter(text):
@@ -36,6 +44,69 @@ def parse_frontmatter(text):
         if sep:
             fm[key.strip()] = value.strip()
     return fm
+
+
+def shingles4(s):
+    words = re.findall(r"[a-z]+", s.lower())
+    return set(tuple(words[i:i + 4]) for i in range(len(words) - 3))
+
+
+def jaccard(a, b):
+    if not a or not b:
+        return 0.0
+    return len(a & b) / min(len(a), len(b))
+
+
+def inline_units(text):
+    parts = [p for p in text.split(";") if p.strip()]
+    return max(1, len(parts)) if text.strip() else 0
+
+
+def item_depth(block_lines):
+    detect_chars = 0
+    pitfall_units = 0
+    apply_units = 0
+    has_precond = False
+    in_fence = False
+    i = 0
+    while i < len(block_lines):
+        line = block_lines[i]
+        stripped = line.strip()
+        if stripped.startswith("```"):
+            in_fence = not in_fence
+            i += 1
+            continue
+        m = None if in_fence else SECTION_RE.match(stripped)
+        i += 1
+        if not m:
+            continue
+        kind, val = m.group(1), m.group(2)
+        units = 0
+        # absorb continuation lines (wrapped values / bullets) until a blank
+        # line, label, heading, or fence marker
+        while i < len(block_lines):
+            nxt = block_lines[i].strip()
+            if (not nxt or nxt.startswith("**") or nxt.startswith("#")
+                    or nxt.startswith("|") or nxt.startswith("```")
+                    or SECTION_RE.match(nxt)):
+                break
+            if nxt.startswith(("- ", "* ")):
+                units += 1
+            i += 1
+        numbered = re.findall(r"(?:^|[\s;])\d+\)\s", " " + val)
+        if kind == "Detect":
+            detect_chars += len(val) + 4 * units
+        elif kind in ("Preconditions", "Avoid"):
+            has_precond = True
+        elif kind == "Apply":
+            apply_units += max(len(numbered), inline_units(val)) if val.strip() else 0
+        elif kind == "Pitfalls":
+            pitfall_units += inline_units(val) + units
+    return detect_chars, pitfall_units, apply_units, has_precond
+
+
+def fmt_range(lo, hi):
+    return str(lo) if lo == hi else f"{lo}-{hi}"
 
 
 def main(root: Path) -> int:
@@ -61,6 +132,9 @@ def main(root: Path) -> int:
 
     item_total = 0
     sizes = {}
+    texts = {}
+    descs = {}
+    depth = {}
     for d in skill_dirs:
         skill_md = d / "SKILL.md"
         if not skill_md.exists():
@@ -68,12 +142,14 @@ def main(root: Path) -> int:
             continue
         text = skill_md.read_text(encoding="utf-8")
         sizes[d.name] = len(text.encode("utf-8"))
+        texts[d.name] = text
         fm = parse_frontmatter(text)
         if fm is None:
             fail(f"{d.name}: missing or malformed YAML frontmatter block")
             continue
         name = fm.get("name", "")
         desc = fm.get("description", "")
+        descs[name] = desc
         if name != d.name:
             fail(f"{d.name}: frontmatter name '{name}' does not equal directory name")
         extra_fields = set(fm) - {"name", "description"}
@@ -106,17 +182,104 @@ def main(root: Path) -> int:
                 fail(f"{d.name}: {items} '### ' item sections, expected {expected_items}")
             else:
                 ok(f"{d.name}: {items}/{expected_items} catalog items present")
+            blocks = {}
+            cur = None
+            for ln in text.splitlines():
+                if ln.startswith("### "):
+                    cur = ln[4:].strip()
+                    blocks[cur] = []
+                elif cur is not None and not ln.startswith("#"):
+                    blocks[cur].append(ln)
+            stats = [item_depth(blk) for blk in blocks.values()]
+            if stats:
+                depth[d.name] = {
+                    "items": len(stats),
+                    "pit": (min(s[1] for s in stats), max(s[1] for s in stats)),
+                    "apply": (min(s[2] for s in stats), max(s[2] for s in stats)),
+                    "detect": (min(s[0] for s in stats), max(s[0] for s in stats)),
+                    "thin": [n for n, s in zip(blocks, stats) if s[1] < 2 or s[2] < 2],
+                }
 
     if item_total != EXPECTED_TOTAL:
         fail(f"catalog total {item_total} != expected {EXPECTED_TOTAL}")
     else:
         ok(f"catalog coverage invariant holds ({EXPECTED_TOTAL} items across 9 leaves)")
 
+    for root_name in sorted(ROOT_SKILLS):
+        text = texts.get(root_name)
+        if text is None:
+            continue
+        fam = sorted(l for l in LEAF_COUNTS if l.startswith(root_name.split("-")[0]))
+        missing = [l for l in fam if f"`{l}`" not in text]
+        if missing:
+            fail(f"{root_name}: does not reference sibling leaves {missing} "
+                 "(router must name every skill it can route to)")
+        else:
+            ok(f"{root_name}: references all {len(fam)} sibling leaves")
+
+    overlap_notes = []
+    for (na, da), (nb, db) in itertools.combinations(sorted(descs.items()), 2):
+        j = jaccard(shingles4(da), shingles4(db))
+        if j >= OVERLAP_FAIL:
+            fail(f"description overlap {na} x {nb}: Jaccard-4 {j:.2f} >= {OVERLAP_FAIL}")
+        elif j >= OVERLAP_WARN:
+            overlap_notes.append(f"  {na} x {nb}: {j:.2f}")
+    print(f"\ndescription overlap (warn >= {OVERLAP_WARN}, fail >= {OVERLAP_FAIL})")
+    print("\n".join(overlap_notes) if overlap_notes else "  none above warn threshold")
+
+    baseline = root / "eval" / "BASELINE.md"
+    values = {}
+    if baseline.exists():
+        for ln in baseline.read_text(encoding="utf-8").splitlines():
+            m = re.match(r"^baseline_(positive|negative)\s*=\s*(\d+)/(\d+)", ln)
+            if m:
+                values[m.group(1)] = (int(m.group(2)), int(m.group(3)))
+    else:
+        fail("eval/BASELINE.md missing (single source of truth for baseline numbers)")
+    readme = (root / "README.md").read_text(encoding="utf-8")
+    badges = {
+        "positive": re.search(r"routing-(\d+)%2F(\d+)", readme),
+        "negative": re.search(r"declines-out-of-domain(?:-|%20)(\d+)%2F(\d+)", readme),
+    }
+    badge_problems = []
+    for key, m in badges.items():
+        if m is None:
+            fail(f"README: {key} badge pattern not found")
+            badge_problems.append(key)
+        elif key not in values:
+            fail(f"README: {key} badge present but baseline_{key} missing in BASELINE.md")
+            badge_problems.append(key)
+        elif (int(m.group(1)), int(m.group(2))) != values[key]:
+            fail(f"README {key} badge {m.group(1)}/{m.group(2)} != BASELINE.md "
+                 f"{values[key][0]}/{values[key][1]}")
+            badge_problems.append(key)
+    if values and not badge_problems:
+        ok(f"README badges consistent with eval/BASELINE.md "
+           f"(positives {values['positive'][0]}/{values['positive'][1]}, "
+           f"negatives {values['negative'][0]}/{values['negative'][1]})")
+
+    version_file = root / "VERSION"
+    if version_file.exists():
+        v = version_file.read_text(encoding="utf-8").strip()
+        if re.fullmatch(r"\d+\.\d+\.\d+", v):
+            ok(f"VERSION {v} present")
+        else:
+            fail(f"VERSION file malformed: {v!r} (want semver MAJOR.MINOR.PATCH)")
+    else:
+        fail("VERSION file missing")
+
     print("\ncontext cost (SKILL.md bytes, informational — not gated)")
     for d in skill_dirs:
         n = sizes.get(d.name)
         print(f"  {d.name:<24} {n if n is not None else 'missing'}")
     print(f"  {'TOTAL':<24} {sum(sizes.values())}")
+
+    print("\nitem depth (informational — not gated; thin = pitfalls < 2 units or apply < 2 units)")
+    for leaf in sorted(depth):
+        s = depth[leaf]
+        print(f"  {leaf:<24} items={s['items']:<2} pitfall {fmt_range(*s['pit']):<4} "
+              f"apply {fmt_range(*s['apply']):<4} detect {fmt_range(*s['detect'])}B "
+              f"thin: {', '.join(s['thin']) if s['thin'] else '-'}")
 
     if failures:
         print(f"\n{failures.__len__()} check(s) FAILED")

@@ -1,0 +1,35 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  gate:
+    name: static gate (structure + content security)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Structure, cross-reference, overlap floor, baseline consistency, depth scorecard
+        run: python3 scripts/check_skills.py
+
+      - name: Content-security scan (secrets, exfil, remote-exec, URLs, injection)
+        run: python3 scripts/security_scan.py
+
+      - name: Leading-word audit (curated smell vocabulary vs routed skills)
+        run: python3 scripts/leading_word_audit.py
+
+      - name: Lexical routing floor (diagnostic, non-gating on its own)
+        run: cd eval && python3 lexsim.py
+
+  # Semantic regression is intentionally NOT run here: grading requires an LLM
+  # agent to generate predictions per probe, which a plain CI shell cannot do.
+  # It stays a manual / agent-run step documented in AGENTS.md and CONTRIBUTING.
+  # The lexical floor above plus check_skills.py are the machine-gated signals.
