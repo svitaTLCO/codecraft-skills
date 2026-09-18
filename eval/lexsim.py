@@ -62,7 +62,8 @@ def main():
     for line in (EVAL / "queries.tsv").read_text(encoding="utf-8").splitlines():
         if not line.strip():
             continue
-        qid, label, query = line.split("\t")[:3]
+        parts = line.split("\t")
+        qid, label, query = parts[0], parts[1].strip(), parts[4]
         best = max(skills.items(), key=lambda kv: score(query, kv[1]))
         b_name, b_desc = best
         b_score = score(query, b_desc)

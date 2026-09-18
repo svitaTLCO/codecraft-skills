@@ -61,3 +61,16 @@ z4	NONE		negative	write pytest coverage for the coupon stacking rules
 z5	NONE		negative	index this query, it's a full table scan
 z6	NONE		negative	the landing page looks like every AI demo site, fix that vibe
 z7	NONE		negative	migrate these GCP pub/sub consumers to Azure Service Bus
+r1	refactor-methods	refactor-detect	positive	checkoutTotal has grown past 40 lines - it validates the cart, applies tax and per-region discounts, then formats the receipt string inline
+r2	refactor-data	refactor-detect	positive	orderStatus is an int everywhere: 0 pending, 1 paid, 2 shipped - every caller re-translates the numbers into words before display
+r3	patterns-behavioral	patterns-detect	positive	each checkout attempt must retry on gateway timeout and roll back the inventory hold if payment fails mid-flow - wire that retry and compensation handling properly
+r4	refactor-conditionals	refactor-detect	positive	pricingDecision nests six levels of if - customer tier, region, promo code, volume band - and adding any one dimension means editing all of them
+w1	refactor-objects	refactor-calls,refactor-detect	compound	the ShippingQuote object is assembled field-by-field across five services, each appending its part through long parameter chains passed four layers deep
+w2	patterns-structural	patterns-behavioral,patterns-detect	cross-set	wrap the third-party payments SDK behind our own PaymentsGateway interface so nothing else sees its vendor types, and fan out order-status changes to the accounting, shipping and notification subscribers
+w3	refactor-generalization	refactor-methods,refactor-detect	compound	CsvExporter and XlsxExporter duplicate the whole open-format-loop-close cycle and drift weekly - find a common shape they share without forcing callers onto a base class
+z8	NONE		negative	a job runs twice because two cron servers fire at the same minute - make it process each scheduled entry only once
+z9	NONE		negative	our websocket connections drop under load because we buffer every message until the client catches up - adjust the flow so slow clients do not stall fast ones
+z10	NONE		negative	my BERT fine-tune loss diverges after epoch three while the validation set still improves - which learning-rate schedule stops the overshoot
+z11	NONE		negative	we need to rotate the signing key used for our mobile app release bundle without invalidating already-installed clients - what is the safe rollout order
+z12	NONE		negative	I am preparing the release notes for v2.4.1 and want the changelog grouped by feature, fix and breaking change before I tag it
+z13	NONE		negative	this kubernetes pod keeps getting OOMKilled - where should I look in the heap profile to find the allocation that grows between restarts

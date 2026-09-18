@@ -2,15 +2,16 @@
 """Grade an LLM selection pass against the labeled corpus.
 
 Inputs (tab-separated):
-  eval/queries.tsv : query_id <TAB> expected_skill_or_NONE <TAB> query
+  eval/queries.tsv : query_id <TAB> expected_skill_or_NONE <TAB> secondary
+                     <TAB> polarity <TAB> query_text   (columns 1–5)
   predictions file : one row per query, "<query_id><TAB><skill-or-NONE>"
                      (row order irrelevant)
 
 Run: python3 grade_semantic.py predictions.tsv
 
-Baseline recorded at creation: 55/56 positive strict-primary hits (the single
-miss was a boundary probe dual-covered by another correct skill), 7/7 negative
-queries rejected as NONE. A new leak on a negative query is a hard regression.
+Canonical baseline and known-miss provenance: eval/BASELINE.md (single
+source of truth) — do not duplicate its numbers here. Any new leak on a
+negative query is a hard regression.
 Exit code is always 0: this is a reporting tool, not a CI gate.
 """
 import sys
