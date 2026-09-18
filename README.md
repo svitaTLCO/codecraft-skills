@@ -9,8 +9,8 @@
 <br>
 
 ![items](https://img.shields.io/badge/items-88%20catalog--complete-brightgreen?style=for-the-badge)
-![routing](https://img.shields.io/badge/routing-55%2F56%20benchmarked-purple?style=for-the-badge)
-![declines](https://img.shields.io/badge/declines-out-of-domain%207%2F7-blue?style=for-the-badge)
+![routing](https://img.shields.io/badge/routing-60%2F63%20benchmarked-purple?style=for-the-badge)
+![declines](https://img.shields.io/badge/declines-out-of-domain%2013%2F13-blue?style=for-the-badge)
 ![agents](https://img.shields.io/badge/agents-opencode%20%C2%B7%20claude-code%20%C2%B7%20any-loader-orange?style=for-the-badge)
 ![license](https://img.shields.io/badge/license-MIT-lightgrey?style=for-the-badge)
 
@@ -59,6 +59,12 @@ cd codecraft-skills
 
 cp -R refactor-methods ~/.agents/skills/       # opencode layout
 cp -R patterns-behavioral ~/.claude/skills/    # Claude Code layout
+
+# or use the tracked installer (ownership manifest in ~/.config/codecraft/,
+# so uninstall removes exactly what it installed):
+scripts/install.sh install --target opencode
+scripts/install.sh doctor                     # integrity + freshness check
+scripts/install.sh uninstall --dry-run        # preview removals
 ```
 
 Every skill is self-contained — one `SKILL.md`, YAML frontmatter, no runtime, no dependencies. Install all eleven or cherry-pick: each description carries its own scope boundary, so wrong-skill pickup stays unlikely. Symlink while iterating locally:
@@ -108,12 +114,15 @@ codecraft-skills/
 
 ## Evidence & Quality Contract 🧾
 
-Measured, not asserted — on a 63-query corpus (52 leaf probes, 4 root/meta probes, 7 deliberately out-of-domain):
+Measured, not asserted — on a 76-probe corpus (63 in-domain, 13 deliberately out-of-domain), scored by three independent closed-book agent passes:
 
-- 📊 **55/56** strict-primary routing hits (the single miss is a probe two skills legitimately co-cover)
-- 🚫 **7/7** out-of-domain queries rejected instead of force-fitted
-- 🧪 **Structural gate** — `python3 scripts/check_skills.py` enforces schema, inventory invariants (66+22), and the description contract
-- 🔁 **Reproducible eval** — stdlib-only corpus + graders in [`eval/`](eval); workflow documented in `AGENTS.md`
+- 📊 **60/63** strict-primary routing hits under majority vote across the three passes (per-pass range 60–61; residual misses are documented dual-covered / wide-boundary probes in `eval/BASELINE.md`)
+- 🚫 **13/13** out-of-domain queries rejected instead of force-fitted — zero leaks on all three passes
+- 🔁 **Stability** — `pass_at_k.py` reports per-probe flip rate; 73/76 probes answered identically across passes
+- 🧪 **Structural gate** — `python3 scripts/check_skills.py` enforces schema, inventory invariants (66+22), router→leaf cross-references, a description-overlap floor, README-badge↔baseline agreement, and VERSION presence/format
+- 🛡️ **Content security** — `scripts/security_scan.py` hard-gates against secret-looking literals, credential assignments, fetch-piped-into-shell patterns, off-whitelist URLs, exfiltration imperatives, and prompt-injection tells
+- ✂️ **Leading words** — `scripts/leading_word_audit.py` verifies every curated smell term appears in the skill it routes to
+- 🧾 **Reproducible eval** — stdlib-only corpus + graders in [`eval/`](eval); canonical numbers in [`eval/BASELINE.md`](eval/BASELINE.md); workflow documented in `AGENTS.md`
 
 > ✅ **Any change that degrades routing without a measured improvement is a regression.** That's the floor, not the ceiling.
 

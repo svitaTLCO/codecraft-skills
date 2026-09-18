@@ -17,8 +17,10 @@ growth, and packaging/docs improvements.
 git clone https://github.com/svitaTLCO/codecraft-skills
 cd codecraft-skills
 # make your change ...
-python3 scripts/check_skills.py      # structural gate — must pass
-cd eval && python3 build_input.py    # if you touched a description/routing table
+python3 scripts/check_skills.py         # structural gate — must pass
+python3 scripts/security_scan.py        # content security — must pass
+python3 scripts/leading_word_audit.py   # curated terms land where they route
+cd eval && python3 build_input.py       # if you touched a description/routing table
 # see AGENTS.md "Verification workflow" for the selection-regression steps
 ```
 
@@ -30,7 +32,8 @@ review its own edits), load the changed skill, then:
 1. Ask an in-scope question and confirm the skill engages.
 2. Ask an out-of-domain question and confirm it declines or reroutes.
 3. For routing changes, run the `eval/` semantic grading and compare against
-   the documented baseline (55/56 positives, 7/7 negatives rejected).
+   the documented baseline (`eval/BASELINE.md` is the single source of truth;
+   any new negative leak is a hard regression).
 
 ## What gets accepted
 

@@ -9,7 +9,9 @@ Eleven auto-detecting agent skills: two master detectors (`refactor-detect`,
 `patterns-detect`) and nine leaf skills covering the complete refactoring
 catalog (66 techniques, 6 categories) and the GoF design pattern catalog
 (22 patterns, 3 families). Consumers load skills through their `SKILL.md`
-frontmatter `description`; nothing else in this repo ships.
+frontmatter `description`; nothing else in this repo ships. Installer state
+lives at `~/.config/codecraft/` outside the shipped surface, and `scripts/` +
+`eval/` are tooling only — never installed into a skill directory.
 
 ## Layout and naming
 
@@ -189,28 +191,39 @@ moves the documented baseline; that is growth, not a regression.
 
 Always run, in this order:
 
-1. **Structural gate** (must pass, exit 0):
+1. **Structural and content gates** (must pass, exit 0):
    ```sh
    python3 scripts/check_skills.py
+   python3 scripts/security_scan.py
+   python3 scripts/leading_word_audit.py
    ```
-   Checks: directory/name match, frontmatter validity, description length and
-   required markers, Quick-Pick presence, per-leaf item counts against the
-   invariants table. Also reports per-skill and total `SKILL.md` byte size
-   (context cost; informational — no limit enforced).
+   The first checks directory/name match, frontmatter validity, description
+   length and required markers, Quick-Pick presence, per-leaf item counts
+   against the invariants table, router-to-leaf cross-reference integrity,
+   the pairwise description-overlap floor, and README badge agreement with
+   `eval/BASELINE.md`, and VERSION presence/format. It also
+   reports per-skill and total `SKILL.md` byte size (context cost;
+   informational — no limit enforced). The second refuses secret-looking
+   literals, credential assignments, fetch-piped-into-shell patterns,
+   off-whitelist URLs, exfiltration-shaped imperatives, and prompt-injection
+   tells anywhere in the tree. The third verifies every curated smell term
+   above actually appears in its routed skill.
 2. **Selection regression** (required whenever a `description` or routing
    table changed; stdlib only):
-   ```sh
-   cd eval
-   python3 build_input.py          # regenerate semantic_input.txt
-   # ask any capable agent: given semantic_input.txt + the queries in
-   # queries.tsv (column 3 only), emit pred.tsv rows "<query_id>\t<skill-or-NONE>"
-   python3 grade_semantic.py pred.tsv
-   ```
-   Baseline: 55/56 positive strict-primary, 7/7 negatives rejected (full
-   detail in the history of `PLAN.md` upstream; the one known miss is the
-   relay-layer probe accepted either way as dual-covered). Any new leak on a
-   negative query is a hard regression: fix the description before merging.
-   Optional lexical floor: `python3 lexsim.py`.
+    ```sh
+    cd eval
+    python3 build_input.py          # regenerate semantic_input.txt
+    # ask any capable agent: given semantic_input.txt + the queries in
+    # queries.tsv (column 5 only), emit pred.tsv rows "<query_id>\t<skill-or-NONE>"
+    python3 grade_semantic.py pred.tsv
+    ```
+    Canonical scores and known-miss provenance live in `eval/BASELINE.md`
+    (single source of truth); the current baseline there is 60/63 positive
+    under majority vote across three independent closed-book passes, 13/13
+    negatives rejected, with per-pass detail in its run-history table. Any new
+    leak on a negative query is a hard regression: fix the description before
+    merging. Optional lexical floor: `python3 lexsim.py`. Stability across
+    repeated passes: `python3 pass_at_k.py pred_a.tsv pred_b.tsv pred_c.tsv`.
 3. **Live spot-check (blind, fresh context)**: use a new agent session that
    has not made this change — the editing session cannot review its own
    work. Give it no hint about which skill changed; ask one in-scope question
@@ -221,6 +234,8 @@ Always run, in this order:
 ## PR checklist
 
 - [ ] `python3 scripts/check_skills.py` passes.
+- [ ] `python3 scripts/security_scan.py` and
+      `python3 scripts/leading_word_audit.py` pass.
 - [ ] Any real-world misroute or non-engagement this change fixes ships with
   its probe in `eval/queries.tsv` (see Regression capture).
 - [ ] `eval` grading shows no regression versus baseline (if applicable).
