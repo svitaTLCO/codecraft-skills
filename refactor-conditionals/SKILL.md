@@ -51,7 +51,7 @@ General precondition: tests covering each branch *before* restructuring — coun
 **Pitfalls:** early exits must replicate the original cleanup/finally behavior; don't turn guard clauses into exception-spamming style for ordinary invalid input (use validation up front).
 
 ### Replace Conditional with Polymorphism
-**Detect:** the *Switch Statements* smell: switch/if-chain on a type discriminator appearing in several classes; adding a type = editing everything.
+**Detect:** the *Switch Statements* smell (switch proliferation): parallel type-code switches/if-chains on a type discriminator replicated across modules; adding a type = editing everything.
 **Preconditions:** a class hierarchy exists per type (else do Extract Class/Subclass first, `refactor-data` / `refactor-objects`); base has no meaningful common implementation for the varied operation.
 **Apply:** declare abstract/interface method for the varied operation in the base; implement per subclass (migrating each branch); remove discriminators and factory's type-argument logic becomes plain construction.
 **Pitfalls:** inverted dependency check: if the base conceptually shouldn't know the variants, consider Strategy composition (`patterns-behavioral`) instead of inheritance.

@@ -36,7 +36,7 @@ How to read a user's symptoms into smells. Multiple rows can match; strongest si
 | # | Smell | Signal in code | Signal in user words | Primary techniques (sub-skill) |
 |---|-------|---------------|----------------------|-------------------------------|
 | 1 | Long Method | >~20 lines; nested blocks; comments narrating sections | "method too long", "split this function" | Extract Method, Split Temporary Variable, Replace Temp with Query (`refactor-methods`) |
-| 2 | Large Class | Dozens of fields; does everything; unclear name | "class does too much", "break this up" | Extract Class (`refactor-objects`) |
+| 2 | Large Class | Dozens of fields; does everything; unclear name | "class does too much", "break this up", "ball of mud", "god class" | Extract Class (`refactor-objects`) |
 | 3 | Primitive Obsession | int/string booleans representing concepts (money, email, status=2) | "model this properly", "magic numbers everywhere" | Replace Data Value with Object, Encapsulate Field (`refactor-data`) |
 | 4 | Long Parameter List | 5+ params; callers pass same clusters repeatedly | "too many args", "confusing call signature" | Introduce Parameter Object, Replace Parameter with Explicit Methods (`refactor-calls`) |
 | 5 | Data Clumps | Same pair/group of variables appears in several functions/classes | "these three values always travel together" | Introduce Parameter Object, Extract Class (`refactor-calls` / `refactor-objects`) |

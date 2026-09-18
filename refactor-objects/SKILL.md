@@ -35,7 +35,7 @@ General preconditions: build+tests green before/after; public API changes explic
 **Pitfalls:** databases/ORMs often treat field location as part of the schema mapping — verify mapping layers before moving persistent fields.
 
 ### Extract Class
-**Detect:** Large Class, Divergent Change: one class answers several unrelated questions; >~10 fields or >~5 responsibilities; name forces an "and..." description.
+**Detect:** Large Class, Divergent Change, Shotgun Surgery: one class answers several unrelated questions; a single change forces many edits across classes; >~10 fields or >~5 responsibilities; name forces an "and..." description.
 **Preconditions:** a coherent cluster of fields can be identified (a Data Clump); tests exist for affected behavior.
 **Apply:** 1) create new class, move the clump's fields + all methods that primarily use them, 2) replace direct field access with accessors on the original, 3) migrate callers gradually (keep delegating accessors), 4) remove dead code from the source class.
 **Pitfalls:** extracting without tests = highest-risk refactoring here; don't extract speculative singletons; watch circular dependencies introduced.

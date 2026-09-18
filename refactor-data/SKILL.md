@@ -43,7 +43,7 @@ Decision helper for type codes: several types with different *behavior* → Subc
 **Pitfalls:** copies cost memory/time for large collections — use unmodifiable wrappers where supported; document which operations are intended.
 
 ### Replace Data Value with Object
-**Detect:** Primitive Obsession — `float price`, `string email`, `int status = 2`; validation duplicated at every write site; units hidden.
+**Detect:** Primitive Obsession; data clumps traveling together into many methods — `float price`, `string email`, `int status = 2`; validation duplicated at every write site; units hidden.
 **Preconditions:** tests pin down current parsing/validation behavior.
 **Apply:** create a small class wrapping the primitive with constructor-time validation and semantic methods (`price.addTax()`); replace the field's type; migrate reads/writes; delete ad-hoc validators scattered elsewhere.
 **Pitfalls:** value objects should be immutable and cheap; persistence/serialization may need mapping; equality/hashcode updated.

@@ -44,7 +44,7 @@ General preconditions: target unit compiles + tests pass before and after; langu
 **Pitfalls:** if the expression must re-evaluate (e.g., time-dependent), extracting freezes it — verify semantics.
 
 ### Inline Temp
-**Detect:** `temp = <simple expr>` assigned once; every use could take the expression directly; variable name is opaque (`x`, `t`).
+**Detect:** `temp = <simple expr>` assigned once; every use could take the expression directly; variable name is opaque (`x`, `t`); dead weight — locals/parameters unused or needlessly copied.
 **Preconditions:** single assignment; expression pure (no side effects); cheap enough to repeat; no language aliasing subtleties (by-reference captures).
 **Apply:** substitute the expression at each use; delete the declaration.
 **Pitfalls:** repeated evaluation may have different performance/exception timing; closures capturing the temp by reference change semantics when inlined.
