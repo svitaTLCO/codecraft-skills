@@ -20,6 +20,7 @@ EXCLUDE_DIRS = {".git"}
 MAX_FILE_BYTES = 1_000_000
 
 ALLOWED_URL_HOSTS = {
+    "anthropic.com",
     "refactoring.guru",
     "www.refactoring.guru",
     "shields.io",

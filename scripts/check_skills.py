@@ -4,11 +4,12 @@
 Usage: python3 scripts/check_skills.py [repo_root]
 Exits 0 when all checks pass, 1 otherwise. Enforces: schema and inventory
 invariants, root-to-leaf routing cross-references, pairwise description
-overlap floor, README badge consistency with eval/BASELINE.md, and VERSION
-presence/format. Also
+overlap floor, README badge consistency with eval/BASELINE.md, VERSION
+presence/format, and .claude-plugin manifest cross-checks. Also
 reports per-skill and total SKILL.md byte size (context cost) and a per-item
 depth scorecard — informational, not gated.
 """
+import json
 import itertools
 import re
 import sys
@@ -267,6 +268,45 @@ def main(root: Path) -> int:
             fail(f"VERSION file malformed: {v!r} (want semver MAJOR.MINOR.PATCH)")
     else:
         fail("VERSION file missing")
+
+    plugin_manifest = root / ".claude-plugin" / "plugin.json"
+    marketplace_manifest = root / ".claude-plugin" / "marketplace.json"
+    if not (plugin_manifest.exists() and marketplace_manifest.exists()):
+        fail(".claude-plugin manifests missing (want plugin.json + marketplace.json)")
+    else:
+        try:
+            pm = json.loads(plugin_manifest.read_text(encoding="utf-8"))
+            mm = json.loads(marketplace_manifest.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as e:
+            fail(f".claude-plugin manifest invalid JSON: {e}")
+            pm = mm = None
+        if isinstance(pm, dict) and isinstance(mm, dict):
+            ver = version_file.read_text(encoding="utf-8").strip() if version_file.exists() else ""
+            leaf_names = sorted(d.name for d in skill_dirs)
+            problems = []
+            if pm.get("name") != "codecraft-skills":
+                problems.append("plugin.json name must be codecraft-skills")
+            if mm.get("name") != pm.get("name"):
+                problems.append("manifest names disagree")
+            if str(pm.get("version")) != ver or str(mm.get("version")) != ver:
+                problems.append("manifest versions out of sync with VERSION")
+            if sorted(str(s) for s in pm.get("skills", [])) != [f"./{n}" for n in leaf_names]:
+                problems.append("plugin.json skills array out of sync with catalog directories")
+            if not str(pm.get("description") or "").strip():
+                problems.append("plugin.json description empty")
+            owner = mm.get("owner")
+            if not (isinstance(owner, dict) and str(owner.get("name") or "").strip()):
+                problems.append("marketplace.json owner.name missing")
+            plugins = mm.get("plugins")
+            if (not isinstance(plugins, list) or len(plugins) != 1
+                    or plugins[0].get("name") != pm.get("name")
+                    or plugins[0].get("source") != "./"):
+                problems.append('marketplace.json plugins must be [{name, source: "./"}]')
+            if problems:
+                fail("; ".join(problems))
+            else:
+                ok(f"Claude Code manifests consistent (.claude-plugin: "
+                   f"{len(leaf_names)} skills, version {ver})")
 
     print("\ncontext cost (SKILL.md bytes, informational — not gated)")
     for d in skill_dirs:

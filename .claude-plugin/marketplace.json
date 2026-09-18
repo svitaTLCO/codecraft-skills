@@ -1,0 +1,14 @@
+{
+  "name": "codecraft-skills",
+  "version": "1.2.0",
+  "description": "Give any coding agent the craft of refactoring and design patterns: complete 88-item catalogs, symptom-driven detection, pitfalls known upfront, zero runtime.",
+  "owner": {
+    "name": "svitaTLCO"
+  },
+  "plugins": [
+    {
+      "name": "codecraft-skills",
+      "source": "./"
+    }
+  ]
+}

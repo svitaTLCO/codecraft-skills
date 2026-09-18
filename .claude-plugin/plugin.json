@@ -1,0 +1,19 @@
+{
+  "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
+  "name": "codecraft-skills",
+  "version": "1.2.0",
+  "description": "Give any coding agent the craft of refactoring and design patterns: complete 88-item catalogs, symptom-driven detection, pitfalls known upfront, zero runtime.",
+  "skills": [
+    "./patterns-behavioral",
+    "./patterns-creational",
+    "./patterns-detect",
+    "./patterns-structural",
+    "./refactor-calls",
+    "./refactor-conditionals",
+    "./refactor-data",
+    "./refactor-detect",
+    "./refactor-generalization",
+    "./refactor-methods",
+    "./refactor-objects"
+  ]
+}
