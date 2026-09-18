@@ -3,6 +3,19 @@
 Version format is semver. Catalog inventory moves (items added, renamed, or
 removed) always bump the minor version and state the delta here.
 
+## [Unreleased]
+
+### Verified
+
+- Claude Code plugin channel public-URL flow validated end-to-end (issue #1
+  acceptance criteria 1–3, on Claude Code 2.1.266): `marketplace add
+  https://github.com/svitaTLCO/codecraft-skills` clones and validates the
+  repo, install completes, `details` lists exactly 11 skills with zero extra
+  components, and a fresh headless session engaged `refactor-methods` for an
+  in-scope restructuring request while declining an out-of-domain deploy
+  request without loading any catalog content. The remaining items (second
+  CLI version, older-client degradation note) stay tracked in issue #1.
+
 ## [1.2.0] - 2026-09-18
 
 ### Added

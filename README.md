@@ -66,8 +66,9 @@ scripts/install.sh install --target opencode
 scripts/install.sh doctor                     # integrity + freshness check
 scripts/install.sh uninstall --dry-run        # preview removals
 
-# or let Claude Code's built-in plugin loader do it (flow validated
-# end-to-end on Claude Code 2.1.266; see .claude-plugin/ manifests):
+# or let Claude Code's built-in plugin loader do it (validated end-to-end
+# from the public repo URL on Claude Code 2.1.266, including a fresh-session
+# routing spot-check; cross-client-version matrix tracked in issue #1):
 claude plugin marketplace add https://github.com/svitaTLCO/codecraft-skills
 claude plugin install codecraft-skills@codecraft-skills
 ```
@@ -129,7 +130,7 @@ Measured, not asserted — on a 76-probe corpus (63 in-domain, 13 deliberately o
 - 🧪 **Structural gate** — `python3 scripts/check_skills.py` enforces schema, inventory invariants (66+22), router→leaf cross-references, a description-overlap floor, README-badge↔baseline agreement, and VERSION presence/format
 - 🛡️ **Content security** — `scripts/security_scan.py` hard-gates against secret-looking literals, credential assignments, fetch-piped-into-shell patterns, off-whitelist URLs, exfiltration imperatives, and prompt-injection tells
 - ✂️ **Leading words** — `scripts/leading_word_audit.py` verifies every curated smell term appears in the skill it routes to
-- 🔌 **Plugin loader validated** — `.claude-plugin/` manifests pass end-to-end on Claude Code 2.1.266 (local-path `marketplace add` → `install` → `details`: 11 skills discovered, zero extra runtime components)
+- 🔌 **Plugin loader validated** — `.claude-plugin/` manifests pass end-to-end on Claude Code 2.1.266 from the **public repo URL** (`marketplace add` → `install` → `details`: 11 skills discovered, zero extra runtime components); a fresh headless session engaged `refactor-methods` for an in-scope request and declined an out-of-domain one without loading any catalog content (cross-client-version matrix tracked in issue #1)
 - 🌐 **Cross-model spot-check** — a different model family (DeepSeek-V4-Flash) routed 63/63 with zero leaks on the identical closed-book corpus (single effective resample, directional — see `eval/BASELINE.md`)
 - 🧾 **Reproducible eval** — stdlib-only corpus + graders in [`eval/`](eval); canonical numbers in [`eval/BASELINE.md`](eval/BASELINE.md); workflow documented in `AGENTS.md`
 
