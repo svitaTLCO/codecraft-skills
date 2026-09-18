@@ -9,7 +9,7 @@
 <br>
 
 ![items](https://img.shields.io/badge/items-88%20catalog--complete-brightgreen?style=for-the-badge)
-![routing](https://img.shields.io/badge/routing-60%2F63%20benchmarked-purple?style=for-the-badge)
+![routing](https://img.shields.io/badge/routing-61%2F63%20benchmarked-purple?style=for-the-badge)
 ![declines](https://img.shields.io/badge/declines-out-of-domain%2013%2F13-blue?style=for-the-badge)
 ![agents](https://img.shields.io/badge/agents-opencode%20%C2%B7%20claude-code%20%C2%B7%20any-loader-orange?style=for-the-badge)
 ![license](https://img.shields.io/badge/license-MIT-lightgrey?style=for-the-badge)
@@ -65,7 +65,14 @@ cp -R patterns-behavioral ~/.claude/skills/    # Claude Code layout
 scripts/install.sh install --target opencode
 scripts/install.sh doctor                     # integrity + freshness check
 scripts/install.sh uninstall --dry-run        # preview removals
+
+# or let Claude Code's built-in plugin loader do it (flow validated
+# end-to-end on Claude Code 2.1.266; see .claude-plugin/ manifests):
+claude plugin marketplace add https://github.com/svitaTLCO/codecraft-skills
+claude plugin install codecraft-skills@codecraft-skills
 ```
+
+> ⚠️ **One channel per machine** — if you already place skills via directory copy or the installer, skip the plugin route: an installed plugin named `codecraft-skills` takes precedence and shadows any same-named skills-directory copy.
 
 Every skill is self-contained — one `SKILL.md`, YAML frontmatter, no runtime, no dependencies. Install all eleven or cherry-pick: each description carries its own scope boundary, so wrong-skill pickup stays unlikely. Symlink while iterating locally:
 
@@ -116,12 +123,14 @@ codecraft-skills/
 
 Measured, not asserted — on a 76-probe corpus (63 in-domain, 13 deliberately out-of-domain), scored by three independent closed-book agent passes:
 
-- 📊 **60/63** strict-primary routing hits under majority vote across the three passes (per-pass range 60–61; residual misses are documented dual-covered / wide-boundary probes in `eval/BASELINE.md`)
+- 📊 **61/63** strict-primary routing hits under majority vote across the three passes (per-pass range 60–61; residual misses are documented dual-covered / wide-boundary probes in `eval/BASELINE.md`)
 - 🚫 **13/13** out-of-domain queries rejected instead of force-fitted — zero leaks on all three passes
 - 🔁 **Stability** — `pass_at_k.py` reports per-probe flip rate; 73/76 probes answered identically across passes
 - 🧪 **Structural gate** — `python3 scripts/check_skills.py` enforces schema, inventory invariants (66+22), router→leaf cross-references, a description-overlap floor, README-badge↔baseline agreement, and VERSION presence/format
 - 🛡️ **Content security** — `scripts/security_scan.py` hard-gates against secret-looking literals, credential assignments, fetch-piped-into-shell patterns, off-whitelist URLs, exfiltration imperatives, and prompt-injection tells
 - ✂️ **Leading words** — `scripts/leading_word_audit.py` verifies every curated smell term appears in the skill it routes to
+- 🔌 **Plugin loader validated** — `.claude-plugin/` manifests pass end-to-end on Claude Code 2.1.266 (local-path `marketplace add` → `install` → `details`: 11 skills discovered, zero extra runtime components)
+- 🌐 **Cross-model spot-check** — a different model family (DeepSeek-V4-Flash) routed 63/63 with zero leaks on the identical closed-book corpus (single effective resample, directional — see `eval/BASELINE.md`)
 - 🧾 **Reproducible eval** — stdlib-only corpus + graders in [`eval/`](eval); canonical numbers in [`eval/BASELINE.md`](eval/BASELINE.md); workflow documented in `AGENTS.md`
 
 > ✅ **Any change that degrades routing without a measured improvement is a regression.** That's the floor, not the ceiling.
@@ -131,7 +140,7 @@ Measured, not asserted — on a 76-probe corpus (63 in-domain, 13 deliberately o
 | Agent | Skills Directory |
 |---|---|
 | 🟢 **OpenCode** | `~/.agents/skills/<name>/` |
-| 🟠 **Claude Code** | `~/.claude/skills/<name>/` |
+| 🟠 **Claude Code** | `~/.claude/skills/<name>/`, or the built-in plugin loader via the root `.claude-plugin/` manifests (`claude plugin marketplace add` → `plugin install`) |
 | ⚪ **Any loader** | one `SKILL.md` per skill, YAML frontmatter (`name`, `description`) — nothing else to wire |
 
 The root `SKILL.md` files are the single source of truth for each category — no duplicated config, no generated artifacts.

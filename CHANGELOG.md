@@ -3,6 +3,37 @@
 Version format is semver. Catalog inventory moves (items added, renamed, or
 removed) always bump the minor version and state the delta here.
 
+## [1.2.0] - 2026-09-18
+
+### Added
+
+- Claude Code plugin channel: root `.claude-plugin/` manifests (`plugin.json`
+  + `marketplace.json`), validated end-to-end on Claude Code 2.1.266 via local
+  path (`marketplace add` → `install` → `details`: 11 skills discovered, zero
+  extra runtime components). The structural gate now cross-checks the manifests
+  against the catalog directories and `VERSION`; README quick-start documents
+  the loader flow plus the one-channel-per-machine precedence note. Public
+  URL-flow validation across client versions is tracked in a GitHub issue.
+- Cross-model spot-check evidence (`eval/predictions/pred_{g,h,i}.tsv`,
+  recorded in `eval/BASELINE.md`): headless passes pinned to a different model
+  family (DeepSeek-V4-Flash) scored 63/63 strict-primary with 13/13 negative
+  rejections and zero leaks on the identical closed-book corpus. The three
+  captures were byte-identical, so they are recorded as one effective answer
+  vector (directional evidence, never badge material); the AGENTS.md
+  verification workflow now documents the spot-check protocol.
+
+### Changed
+
+- Eval corpus label corrections (no shipped-text change; existing closed-book
+  passes re-scored rather than regenerated): `x2` primary label corrected from
+  `refactor-data` to `refactor-conditionals` (five of six historical votes and
+  the query's dominant Replace-Conditional-with-Polymorphism semantics), and
+  `g3` marked as a dual-cover ambiguity with rival leaf `refactor-objects`
+  added to its secondary column. Canonical majority-vote baseline moves
+  60/63 → 61/63; residual misses reduce to {g3, w1}.
+- `scripts/security_scan.py` allowlist extended for the official Anthropic
+  plugin `$schema` URI (metadata reference only, nothing executable).
+
 ## [1.1.0] - 2026-09-18
 
 ### Added

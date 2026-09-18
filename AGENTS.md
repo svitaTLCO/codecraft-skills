@@ -9,7 +9,10 @@ Eleven auto-detecting agent skills: two master detectors (`refactor-detect`,
 `patterns-detect`) and nine leaf skills covering the complete refactoring
 catalog (66 techniques, 6 categories) and the GoF design pattern catalog
 (22 patterns, 3 families). Consumers load skills through their `SKILL.md`
-frontmatter `description`; nothing else in this repo ships. Installer state
+frontmatter `description`; nothing else in this repo ships. The root
+`.claude-plugin/` directory holds packaging metadata for Claude Code's plugin
+loader (`plugin.json` + `marketplace.json`, cross-checked by the structural
+gate); it is consumed only by that loader. Installer state
 lives at `~/.config/codecraft/` outside the shipped surface, and `scripts/` +
 `eval/` are tooling only — never installed into a skill directory.
 
@@ -218,12 +221,19 @@ Always run, in this order:
     python3 grade_semantic.py pred.tsv
     ```
     Canonical scores and known-miss provenance live in `eval/BASELINE.md`
-    (single source of truth); the current baseline there is 60/63 positive
+    (single source of truth); the current baseline there is 61/63 positive
     under majority vote across three independent closed-book passes, 13/13
     negatives rejected, with per-pass detail in its run-history table. Any new
     leak on a negative query is a hard regression: fix the description before
     merging. Optional lexical floor: `python3 lexsim.py`. Stability across
     repeated passes: `python3 pass_at_k.py pred_a.tsv pred_b.tsv pred_c.tsv`.
+    Optional cross-model spot-check (when a second provider/model is
+    available): rebuild the same closed-book attachment and run fresh headless
+    passes pinned to the foreign model (`opencode run --pure -m
+    <provider>/<model>`, neutral working directory, external skill scans
+    disabled); save raw answer vectors under `eval/predictions/` and record
+    per-pass scores plus agreement-with-consensus in `eval/BASELINE.md`.
+    Directional evidence only — never badge material.
 3. **Live spot-check (blind, fresh context)**: use a new agent session that
    has not made this change — the editing session cannot review its own
    work. Give it no hint about which skill changed; ask one in-scope question
