@@ -78,6 +78,10 @@ def main(root: Path) -> int:
             fail(f"{d.name}: unexpected frontmatter fields {sorted(extra_fields)}")
         if not MIN_DESC <= len(desc) <= MAX_DESC:
             fail(f"{d.name}: description length {len(desc)} outside {MIN_DESC}-{MAX_DESC}")
+        hazardous = [tok for tok in (": ", " #") if tok in desc]
+        if hazardous:
+            fail(f"{d.name}: description contains YAML-hazardous sequence(s) {hazardous} "
+                 f"(strict parsers reject plain scalars with ': ' — use an em dash)")
 
         if d.name in ROOT_SKILLS:
             if "|" not in text:

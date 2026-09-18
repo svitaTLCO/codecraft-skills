@@ -1,6 +1,6 @@
 ---
 name: refactor-generalization
-description: Detect and apply refactoring.guru "Dealing with Generalization" refactorings: Pull Up Field/Method/Constructor Body, Push Down Method/Field, Extract Subclass, Extract Superclass, Extract Interface, Collapse Hierarchy, Form Template Method, Replace Inheritance with Delegation, Replace Delegation with Inheritance. Use when a hierarchy has members in the wrong layer, siblings share code, a base class is half-useful, or inheritance fights you (Refused Bequest). Triggers: "tighten inheritance", "shared across subclasses", "base class problem", "too deep hierarchy", "composition vs inheritance here".
+description: Detect and apply refactoring.guru "Dealing with Generalization" refactorings — Pull Up Field/Method/Constructor Body, Push Down Method/Field, Extract Subclass, Extract Superclass, Extract Interface, Collapse Hierarchy, Form Template Method, Replace Inheritance with Delegation, Replace Delegation with Inheritance. Use when a hierarchy has members in the wrong layer, siblings share code, a base class is half-useful, or inheritance fights you (Refused Bequest). Triggers — "tighten inheritance", "shared across subclasses", "base class problem", "too deep hierarchy", "composition vs inheritance here".
 ---
 
 # Dealing with Generalization (Refactoring.Guru set)

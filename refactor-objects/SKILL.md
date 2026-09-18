@@ -1,6 +1,6 @@
 ---
 name: refactor-objects
-description: Detect and apply refactoring.guru "Moving Features Between Objects" refactorings: Move Method, Move Field, Extract Class, Inline Class, Hide Delegate, Remove Middle Man, Introduce Foreign Method, Introduce Local Extension. Use when logic lives in the wrong class, a class is too large or does nothing, getters/setters leak internals, message chains of `a.getB().getC()`, or pass-through wrappers clutter design. Triggers: "this method belongs elsewhere", "class too big", "feature envy", "split this object", "remove wrapper", "too many getters", "message chain".
+description: Detect and apply refactoring.guru "Moving Features Between Objects" refactorings — Move Method, Move Field, Extract Class, Inline Class, Hide Delegate, Remove Middle Man, Introduce Foreign Method, Introduce Local Extension. Use when logic lives in the wrong class, a class is too large or does nothing, getters/setters leak internals, message chains of `a.getB().getC()`, or pass-through wrappers clutter design. Triggers — "this method belongs elsewhere", "class too big", "feature envy", "split this object", "remove wrapper", "too many getters", "message chain".
 ---
 
 # Moving Features Between Objects (Refactoring.Guru set)

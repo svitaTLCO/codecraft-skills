@@ -1,6 +1,6 @@
 ---
 name: refactor-detect
-description: Analyze a user query and code to detect which refactoring.guru refactoring applies, then apply it safely. Master entry point for all 66 refactoring techniques in six categories (composing methods, moving features between objects, organizing data, simplifying conditionals, simplifying method calls, dealing with generalization). Use when the user says "refactor", complains about long methods/functions, duplicated code, weird classes, tangled inheritance, messy conditionals, bad naming, or asks "how do I clean up this code". Triggers: "refactor this", "clean up", "code smell", "too long", "too many parameters", "split function", "move this logic", "simplify if/else", "tighten inheritance".
+description: Analyze a user query and code to detect which refactoring.guru refactoring applies, then apply it safely. Master entry point for all 66 refactoring techniques in six categories (composing methods, moving features between objects, organizing data, simplifying conditionals, simplifying method calls, dealing with generalization). Use when the user says "refactor", complains about long methods/functions, duplicated code, weird classes, tangled inheritance, messy conditionals, bad naming, or asks "how do I clean up this code". Triggers — "refactor this", "clean up", "code smell", "too long", "too many parameters", "split function", "move this logic", "simplify if/else", "tighten inheritance".
 ---
 
 # Refactor Detect (Refactoring.Guru set — router)

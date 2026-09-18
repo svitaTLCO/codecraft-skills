@@ -1,6 +1,6 @@
 ---
 name: refactor-conditionals
-description: Detect and apply refactoring.guru "Simplifying Conditional Expressions" refactorings: Decompose Conditional, Consolidate Conditional Expression, Consolidate Duplicate Conditional Fragments, Remove Control Flag, Replace Nested Conditional with Guard Clauses, Replace Conditional with Polymorphism, Introduce Null Object, Introduce Assertion. Use for if/else tangles, deep nesting, boolean flags as control flow, type-code switches, scattered null checks, or preconditions hidden in conditionals. Triggers: "simplify this if", "too much nesting", "guard clauses", "early return", "switch on type", "null check everywhere", "this flag is weird".
+description: Detect and apply refactoring.guru "Simplifying Conditional Expressions" refactorings — Decompose Conditional, Consolidate Conditional Expression, Consolidate Duplicate Conditional Fragments, Remove Control Flag, Replace Nested Conditional with Guard Clauses, Replace Conditional with Polymorphism, Introduce Null Object, Introduce Assertion. Use for if/else tangles, deep nesting, boolean flags as control flow, type-code switches, scattered null checks, or preconditions hidden in conditionals. Triggers — "simplify this if", "too much nesting", "guard clauses", "early return", "switch on type", "null check everywhere", "this flag is weird".
 ---
 
 # Simplifying Conditional Expressions (Refactoring.Guru set)

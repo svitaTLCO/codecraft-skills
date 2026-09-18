@@ -1,6 +1,6 @@
 ---
 name: patterns-creational
-description: Detect and apply refactoring.guru creational patterns: Factory Method, Abstract Factory, Builder, Prototype, Singleton. Use when object creation is tangled into clients, constructors leak configuration, product families must stay consistent, objects are expensive to clone/copy, or an uncontrolled "one instance" is needed. Triggers: "how should I create these objects", "construction is a mess", "fluent builder", "clone this", "shared config everywhere", "DI container keeps making duplicates".
+description: Detect and apply refactoring.guru creational patterns — Factory Method, Abstract Factory, Builder, Prototype, Singleton. Use when object creation is tangled into clients, constructors leak configuration, product families must stay consistent, objects are expensive to clone/copy, or an uncontrolled "one instance" is needed. Triggers — "how should I create these objects", "construction is a mess", "fluent builder", "clone this", "shared config everywhere", "DI container keeps making duplicates".
 ---
 
 # Creational Patterns (Refactoring.Guru set)

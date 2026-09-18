@@ -1,6 +1,6 @@
 ---
 name: patterns-structural
-description: Detect and apply refactoring.guru structural patterns: Adapter, Bridge, Composite, Decorator, Facade, Flyweight, Proxy. Use when integrating incompatible/legacy interfaces, decoupling two varying dimensions, modeling part-whole trees, adding features without subclass explosion, simplifying a complex subsystem's surface, saving memory on massive similar objects, or controlling access to a subject (lazy loading, caching, auth, remote/large objects). Triggers: "wrap this legacy API", "incompatible interface", "tree of nodes", "add behavior dynamically", "simplify these 30 classes", "memory blowup with many objects", "auth/cache/lazy around X", "facade around a subsystem", "convert this adapter/decorator/proxy".
+description: Detect and apply refactoring.guru structural patterns — Adapter, Bridge, Composite, Decorator, Facade, Flyweight, Proxy. Use when integrating incompatible/legacy interfaces, decoupling two varying dimensions, modeling part-whole trees, adding features without subclass explosion, simplifying a complex subsystem's surface, saving memory on massive similar objects, or controlling access to a subject (lazy loading, caching, auth, remote/large objects). Triggers — "wrap this legacy API", "incompatible interface", "tree of nodes", "add behavior dynamically", "simplify these 30 classes", "memory blowup with many objects", "auth/cache/lazy around X", "facade around a subsystem", "convert this adapter/decorator/proxy".
 ---
 
 # Structural Patterns (Refactoring.Guru set)

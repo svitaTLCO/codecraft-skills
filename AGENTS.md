@@ -46,7 +46,11 @@ contain, in this order of importance:
 
 Style: plain professional English, no marketing adjectives, no emojis, no
 links, no newlines. Keep between 150 and 1000 characters (enforced by
-`scripts/check_skills.py`).
+`scripts/check_skills.py`). The value is a YAML *plain scalar*: it must never
+contain `": "` (colon+space) or `" #"` — strict parsers (PyYAML and similar
+loaders) reject it with "mapping values are not allowed in this context".
+Delimit label lists with an em dash instead (`Triggers — "x", "y"`), and
+verify with `python3 scripts/check_skills.py`, which fails on both sequences.
 
 ## Content standards
 

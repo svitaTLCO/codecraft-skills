@@ -1,6 +1,6 @@
 ---
 name: refactor-methods
-description: Detect and apply refactoring.guru "Composing Methods" refactorings: Extract Method, Inline Method, Extract Variable, Inline Temp, Replace Temp with Query, Split Temporary Variable, Remove Assignments to Parameters, Replace Method with Method Object, Substitute Algorithm. Use when a method/function is too long, full of local variables or temps, comment-heavy, duplicated inside itself, or computes something with an inappropriate algorithm. Triggers: "split this function", "method too long", "clean up locals", "too many temp vars", "rename what this block does", "wrong algorithm here".
+description: Detect and apply refactoring.guru "Composing Methods" refactorings — Extract Method, Inline Method, Extract Variable, Inline Temp, Replace Temp with Query, Split Temporary Variable, Remove Assignments to Parameters, Replace Method with Method Object, Substitute Algorithm. Use when a method/function is too long, full of local variables or temps, comment-heavy, duplicated inside itself, or computes something with an inappropriate algorithm. Triggers — "split this function", "method too long", "clean up locals", "too many temp vars", "rename what this block does", "wrong algorithm here".
 ---
 
 # Composing Methods (Refactoring.Guru set)
