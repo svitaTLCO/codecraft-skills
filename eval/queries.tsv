@@ -22,7 +22,7 @@ cl3	refactor-calls	refactor-detect	positive	validate(file, true) where the bool 
 cl4	refactor-calls	refactor-detect	positive	loadConfig quietly returns NULL on bad paths and callers ignore it
 g1	refactor-generalization	refactor-detect	positive	lift validateContact() up, all three address subclasses implement it identically
 g2	refactor-generalization	refactor-detect	positive	LegacyPdfExporter extends PdfExporter but overrides nearly everything
-g3	refactor-generalization	refactor-detect	positive	nothing instantiates DocumentProcessor directly - pure relay layer between Doc and DocStore, drop it
+g3	refactor-generalization	refactor-objects,refactor-detect	ambiguity	nothing instantiates DocumentProcessor directly - pure relay layer between Doc and DocStore, drop it
 g4	refactor-generalization	refactor-detect	positive	csv, json and xml exporters share open-parse-transform-close, factor the skeleton
 p1	patterns-detect	patterns-behavioral,patterns-creational,patterns-structural	positive	which pattern should I reach for to add hot-swappable notification channels?
 p2	patterns-detect	patterns-behavioral,patterns-creational,patterns-structural	positive	is introducing a design pattern justified here or am I over-engineering?
@@ -51,7 +51,7 @@ n2	patterns-creational	patterns-detect	positive-named	make this builder a fluent
 n3	patterns-structural	patterns-detect	positive-named	convert this adapter to wrap the new interface
 n4	patterns-behavioral	patterns-detect	positive-named	use template method for the shared request lifecycle
 x1	patterns-behavioral	refactor-data,refactor-calls,patterns-detect	cross-set	refactor the fee engine so tariff schedules become pluggable strategies
-x2	refactor-data	refactor-conditionals,refactor-generalization,patterns-behavioral	ambiguity	replace the product-type conditionals with subclasses
+x2	refactor-conditionals	refactor-data,refactor-generalization,patterns-behavioral	ambiguity	replace the product-type conditionals with subclasses
 x3	patterns-structural	refactor-objects	ambiguity	extract a facade around the payment gateway classes
 x4	refactor-calls	patterns-creational	compound	turn the error-code returns into exceptions and add a factory for config objects
 z1	NONE		negative	deploy this Flask app to Azure App Service
